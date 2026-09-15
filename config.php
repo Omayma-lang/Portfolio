@@ -1,20 +1,12 @@
-$host = DB_HOST;
-$port = DB_PORT;
-$db   = DB_NAME;
-$user = DB_USER;
-$pass = DB_PASS;
+<?php
+/**
+ * ================================================================
+ *  DATABASE CONFIGURATION — production & local
+ * ================================================================
+ */
 
-$dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
-
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    // تفعيل الـ SSL المطلوب من Aiven
-    PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false, // أو يمكنك تحميل شهادة الـ CA وتحديد مسارها إذا رغبت بحماية أعلى
-];
-
-try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
-} catch (\PDOException $e) {
-    throw new \PDOException($e->getMessage(), (int)$e->getCode());
-}
+define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
+define('DB_PORT', getenv('DB_PORT') ?: '3307');
+define('DB_NAME', getenv('DB_NAME') ?: 'portfolio_db');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASS') ?: '1234');
