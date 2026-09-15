@@ -1,8 +1,7 @@
 <?php
-
 /**
  * ================================================================
- *  DATABASE CONFIGURATION — Deployment Settings (Aiven)
+ *  DATABASE CONFIGURATION — Direct Aiven Production Settings
  * ================================================================
  */
 
