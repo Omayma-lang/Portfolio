@@ -1,12 +1,8 @@
 <?php
 /**
- * One-time setup script (local development).
- * Run this once in the browser AFTER starting MySQL in XAMPP:
- *   http://localhost/portfolio/seed.php
- *
- * It creates the database + tables and inserts the default content.
- * For DEPLOYMENT, you do NOT need this script — import install.sql
- * through AwardSpace's phpMyAdmin instead (your real data is in there).
+ * One-time setup script (local development & deployment seeding).
+ * Run this once in the browser:
+ *   https://your-app.onrender.com/seed.php
  */
 
 require_once __DIR__ . '/config.php';
@@ -18,7 +14,6 @@ function run_sql($pdo, $sql) {
 }
 
 // 1) Try to connect directly to the database (works when it exists).
-//    If it doesn't exist yet, connect without a database to create it.
 try {
     $pdo = new PDO('mysql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME . ';charset=utf8mb4', DB_USER, DB_PASS, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -34,7 +29,7 @@ try {
         echo "Database '" . DB_NAME . "' created.\n";
         $pdo->exec('USE `' . DB_NAME . '`');
     } catch (PDOException $e2) {
-        echo "Cannot connect to MySQL. Check config.php — is XAMPP MySQL running?\n";
+        echo "Cannot connect to MySQL. Check config.php\n";
         echo "Error: " . $e2->getMessage() . "\n";
         exit(1);
     }
@@ -117,18 +112,41 @@ if (!$exists) {
     ]);
     $project_id = $pdo->lastInsertId();
 
-    // Add placeholder image rows so the gallery has structure.
-    // Replace these paths with your real screenshots in /assets/images/
+    // Add real screenshots for bookstore
     $imgSt = $pdo->prepare("INSERT INTO project_images (project_id, image_path, caption, sort_order) VALUES (?,?,?,?)");
-    $imgSt->execute([$project_id, 'assets/images/placeholder-bookstore.svg', 'Homepage', 0]);
-    $imgSt->execute([$project_id, 'assets/images/placeholder-bookstore-2.svg', 'Product page', 1]);
-    $imgSt->execute([$project_id, 'assets/images/placeholder-bookstore-3.svg', 'Admin panel', 2]);
+    $imgSt->execute([$project_id, 'assets/images/projects/bookstore-ecommerce-site/screenshot-1.jpg', 'Homepage', 0]);
+    $imgSt->execute([$project_id, 'assets/images/projects/bookstore-ecommerce-site/screenshot-2.jpg', 'Product page', 1]);
+    $imgSt->execute([$project_id, 'assets/images/projects/bookstore-ecommerce-site/screenshot-3.jpg', 'Admin panel', 2]);
+    $imgSt->execute([$project_id, 'assets/images/projects/bookstore-ecommerce-site/screenshot-4.jpg', 'Checkout view', 3]);
 
-    echo "Bookstore project inserted with placeholder image rows.\n";
-    echo "NOTE: For your REAL content (screenshots, rescue book, certificate),\n";
-    echo "import install.sql instead — it contains everything from your local DB.\n";
+    echo "Bookstore project inserted with real screenshots.\n";
 } else {
     echo "Bookstore project already exists, skipping.\n";
+}
+
+// 5) Insert The Great Picnic Rescue project if it isn't there
+$exists_picnic = $pdo->query("SELECT id FROM projects WHERE slug='the-great-picnic-rescue'")->fetch();
+if (!$exists_picnic) {
+    $stmt = $pdo->prepare("INSERT INTO projects (title, slug, short_description, full_description, tech_used, live_url, sort_order)
+        VALUES (?,?,?,?,?,?,?)");
+    $stmt->execute([
+        "The Great Picnic Rescue",
+        "the-great-picnic-rescue",
+        "An interactive web project featuring adventure and logic elements.",
+        "A detailed description of how I built The Great Picnic Rescue, the challenges faced, and the technologies used.",
+        "JavaScript, HTML, CSS",
+        "#",
+        2
+    ]);
+    $picnic_id = $pdo->lastInsertId();
+
+    // Add cover image for picnic rescue
+    $imgSt = $pdo->prepare("INSERT INTO project_images (project_id, image_path, caption, sort_order) VALUES (?,?,?,?)");
+    $imgSt->execute([$picnic_id, 'assets/images/projects/the-great-picnic-rescue/cover.jpg', 'Project Cover', 0]);
+
+    echo "The Great Picnic Rescue project inserted with cover image.\n";
+} else {
+    echo "The Great Picnic Rescue project already exists, skipping.\n";
 }
 
 echo "\nSetup complete! Visit index.php to view the site.\n";
