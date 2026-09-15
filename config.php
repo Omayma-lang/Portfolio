@@ -1,26 +1,20 @@
-<?php
-/**
- * ================================================================
- *  DATABASE CONFIGURATION — edit this ONE file when you deploy
- * ================================================================
- *  The values below are your LOCAL (XAMPP) defaults and work
- *  exactly as they are on your PC.
- *
- *  WHEN DEPLOYING TO AWARDSPACE:
- *    1. Log in to your AwardSpace control panel.
- *    2. Open  MySQL Management  and CREATE a new database.
- *    3. The panel shows these details — copy them into this file:
- *
- *       DB_HOST  -> looks like:  a1234567.mysql.awardspace.net
- *       DB_NAME  -> looks like:  a1234567_portfolio
- *       DB_USER  -> the MySQL username the panel gives you
- *       DB_PASS  -> the MySQL password the panel gives you
- *       DB_PORT  -> leave as 3306 (AwardSpace uses the default)
- *  ================================================================
- */
+$host = DB_HOST;
+$port = DB_PORT;
+$db   = DB_NAME;
+$user = DB_USER;
+$pass = DB_PASS;
 
-define('DB_HOST', '127.0.0.1');   // XAMPP local. AwardSpace: e.g. a1234567.mysql.awardspace.net
-define('DB_PORT', '3307');        // XAMPP local. AwardSpace: change to 3306
-define('DB_NAME', 'portfolio_db');// XAMPP local. AwardSpace: e.g. a1234567_portfolio
-define('DB_USER', 'root');        // XAMPP local. AwardSpace: your MySQL username
-define('DB_PASS', '1234');        // XAMPP local. AwardSpace: your MySQL password
+$dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
+
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    // تفعيل الـ SSL المطلوب من Aiven
+    PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false, // أو يمكنك تحميل شهادة الـ CA وتحديد مسارها إذا رغبت بحماية أعلى
+];
+
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (\PDOException $e) {
+    throw new \PDOException($e->getMessage(), (int)$e->getCode());
+}
