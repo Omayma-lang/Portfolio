@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ================================================================
  *  DATABASE CONFIGURATION — Deployment Settings (Aiven)
